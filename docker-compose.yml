@@ -1,0 +1,41 @@
+version: "2.4"
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+    networks:
+      - frontend
+  database:
+    container_name: database
+    build:
+      context: ./lib_catalog
+      dockerfile: Dockerfile_pg
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+  backend:
+    container_name: backend
+    build:
+      context: ./lib_catalog
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      database:
+        condition: service_started
+    networks:
+      - backend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
